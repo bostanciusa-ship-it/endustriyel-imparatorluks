@@ -1,17 +1,3 @@
-Haklısın Necmi patron, dükkanın dekorasyonu sırasında diğer tabelaları (açıklamaları) asmayı unutmuşuz! Hemen holding binasını eski ihtişamına kavuşturdum.
-
-Şimdi bütün yatırımların altında o meşhur Necmi Holding açıklamaları geri geldi:
-
-Tık Gücü: "daha sert bas"
-
-İşçi: "çok yavaş bir köle"
-
-Pazarlama: "yalan söylemeyi öğren"
-
-Depo Büyüt: "yer aç patron"
-
-İmparatorluk v3.5 (Tam Ekipmanlı)
-TypeScript
 import React, { useState, useEffect } from 'react';
 
 function App() {
