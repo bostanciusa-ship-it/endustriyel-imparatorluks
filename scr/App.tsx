@@ -1,15 +1,27 @@
+Haklısın Necmi patron, dükkanın dekorasyonu sırasında diğer tabelaları (açıklamaları) asmayı unutmuşuz! Hemen holding binasını eski ihtişamına kavuşturdum.
+
+Şimdi bütün yatırımların altında o meşhur Necmi Holding açıklamaları geri geldi:
+
+Tık Gücü: "daha sert bas"
+
+İşçi: "çok yavaş bir köle"
+
+Pazarlama: "yalan söylemeyi öğren"
+
+Depo Büyüt: "yer aç patron"
+
+İmparatorluk v3.5 (Tam Ekipmanlı)
+TypeScript
 import React, { useState, useEffect } from 'react';
 
 function App() {
-  // --- TEMEL DURUMLAR (STATE) ---
-  const [_c, _sc] = useState(100); // Kasa (Para)
-  const [_p, _sp] = useState(0);   // Stok (Ürün)
-  const [_tp, _stp] = useState(0); // Toplam Üretim
-  const [_ns, _sns] = useState<{id: number, text: string}[]>([]); // Haber Bülteni
-  const [_isTaxing, _setIsTaxing] = useState(false); // Maliye Baskını Görseli
-  const [_nargile, _setNargile] = useState<{id: number, x: number, y: number} | null>(null); // Nargile Konumu
+  const [_c, _sc] = useState(100); 
+  const [_p, _sp] = useState(0);   
+  const [_tp, _stp] = useState(0); 
+  const [_ns, _sns] = useState<{id: number, text: string}[]>([]); 
+  const [_isTaxing, _setIsTaxing] = useState(false); 
+  const [_nargile, _setNargile] = useState<{id: number, x: number, y: number} | null>(null);
 
-  // --- GELİŞTİRMELER (LEVELS) ---
   const [_levels, _setLevels] = useState({
     clickPower: 1,
     autoWorker: 0,
@@ -17,7 +29,6 @@ function App() {
     factorySize: 1 
   });
 
-  // --- SES MOTORU ---
   const playSound = (type: 'click' | 'upgrade' | 'tax' | 'nargile') => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -34,7 +45,7 @@ function App() {
         osc.frequency.setValueAtTime(120, ctx.currentTime);
         gain.gain.setValueAtTime(0.1, ctx.currentTime);
       } else if (type === 'nargile') {
-        osc.type = 'sine'; // Yumuşak nargile sesi
+        osc.type = 'sine';
         osc.frequency.setValueAtTime(330, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.2);
         gain.gain.setValueAtTime(0.08, ctx.currentTime);
@@ -48,9 +59,8 @@ function App() {
     } catch (e) {}
   };
 
-  // --- HESAPLAMALAR ---
   const clickGain = _levels.clickPower * 10;
-  const autoProdRate = _levels.autoWorker * 0.2; // 0.2 Hızında (Çok yavaş köleler)
+  const autoProdRate = _levels.autoWorker * 0.2; 
   const salePrice = 5 + (_levels.marketing * 3); 
   const storageLimit = _levels.factorySize * 30; 
 
@@ -58,7 +68,6 @@ function App() {
     _sns(prev => [...prev.slice(-3), { id: Date.now(), text: msg }]);
   };
 
-  // --- ANA AKSİYONLAR ---
   const _hmp = () => {
     if (_p < storageLimit) {
       const isBonus = Math.random() < 0.05;
@@ -80,7 +89,6 @@ function App() {
       _sc(prev => prev - cost);
       _setLevels(prev => ({ ...prev, [type]: prev[type] + 1 }));
       
-      // Maliye Baskını Şansı (%12)
       if (Math.random() < 0.12 && _c > 500) {
         _setIsTaxing(true);
         setTimeout(() => _setIsTaxing(false), 800);
@@ -88,7 +96,7 @@ function App() {
         const tax = Math.floor(currentMoney * 0.05);
         _sc(prev => prev - tax);
         playSound('tax');
-        _an(`🚨 Paranın %5'i hayır kurumlarına bağışlandı (şüpheli)`);
+        _an(`🚨 paranın % 5 i hayır kurumlarına verildi (şüpheli )`);
       } else {
         _an("Yatırım yapıldı!");
       }
@@ -100,16 +108,14 @@ function App() {
   const _handleNargileClick = () => {
     if (_nargile) {
       playSound('nargile');
-      const gained = Math.floor(Math.random() * 151) + 50; // 50-200 arası
+      const gained = Math.floor(Math.random() * 151) + 50;
       _sc(prev => prev + gained);
       _an(`🌬️ Közü tazeledin! +${gained}$ kazandın!`);
       _setNargile(null);
     }
   };
 
-  // --- BİRLEŞTİRİLMİŞ OYUN DÖNGÜSÜ (useEffect) ---
   useEffect(() => {
-    // 1. İşçiler ve Satış (Her Saniye)
     const _t = setInterval(() => {
       if (autoProdRate > 0) {
         _sp(prev => (prev < storageLimit ? prev + autoProdRate : prev));
@@ -123,20 +129,17 @@ function App() {
       });
     }, 1000);
 
-    // 2. Nargile Radarı (Sesiyle Birlikte)
     const _nargileInterval = setInterval(() => {
-      if (Math.random() < 0.15) { // %15 Şans
+      if (Math.random() < 0.15) {
         const x = Math.random() * 80 + 10;
         const y = Math.random() * 80 + 10;
         const id = Date.now();
-        
         _setNargile({ id, x, y });
-        playSound('nargile'); // Belirdiği an "fiuuup" sesi!
+        playSound('nargile'); 
         _an("🌬️ Bir nargile borusu belirdi! Sesi duyuyor musun?");
-
         setTimeout(() => {
             _setNargile(prev => prev?.id === id ? null : prev);
-        }, 5000); // 5 saniye sonra gider
+        }, 5000);
       }
     }, 10000);
 
@@ -169,9 +172,10 @@ function App() {
       <div style={{ maxWidth: '700px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
         <div style={upgradeContainer}>
           <button onClick={() => buyUpgrade('clickPower', 150)} style={upgBtn}>
-            🚀 Tık Gücü<br/>
+            🚀 Tık Gücü (Lv {_levels.clickPower})<br/>
             <small>${Math.floor(150 * Math.pow(2.5, _levels.clickPower))}</small>
           </button>
+          <p style={descText}>daha sert bas</p>
         </div>
 
         <div style={upgradeContainer}>
@@ -184,16 +188,18 @@ function App() {
 
         <div style={upgradeContainer}>
           <button onClick={() => buyUpgrade('marketing', 200)} style={upgBtn}>
-            📈 Pazarlama<br/>
+            📈 Pazarlama (Lv {_levels.marketing})<br/>
             <small>${Math.floor(200 * Math.pow(2.5, _levels.marketing))}</small>
           </button>
+          <p style={descText}>yalan söylemeyi öğren</p>
         </div>
 
         <div style={upgradeContainer}>
           <button onClick={() => buyUpgrade('factorySize', 400)} style={upgBtn}>
-            🏗️ Depo Büyüt<br/>
+            🏗️ Depo Büyüt (Lv {_levels.factorySize})<br/>
             <small>${Math.floor(400 * Math.pow(2.5, _levels.factorySize))}</small>
           </button>
+          <p style={descText}>yer aç patron</p>
         </div>
       </div>
 
