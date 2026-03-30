@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function App() {
   const [_c, _sc] = useState(100); 
@@ -7,6 +7,9 @@ function App() {
   const [_ns, _sns] = useState<{id: number, text: string}[]>([]); 
   const [_isTaxing, _setIsTaxing] = useState(false); 
   const [_nargile, _setNargile] = useState<{id: number, x: number, y: number} | null>(null);
+  
+  // Nargilenin en son ne zaman çıktığını takip etmek için
+  const lastNargileTime = useRef(Date.now());
 
   const [_levels, _setLevels] = useState({
     clickPower: 1,
@@ -91,6 +94,19 @@ function App() {
     }
   };
 
+  const spawnNargile = () => {
+    const x = Math.random() * 80 + 10;
+    const y = Math.random() * 80 + 10;
+    const id = Date.now();
+    _setNargile({ id, x, y });
+    playSound('nargile'); 
+    lastNargileTime.current = Date.now(); // Zamanlayıcıyı sıfırla
+    _an("🌬️ Nargile borusu belirdi! (Garanti Sistem)");
+    setTimeout(() => {
+        _setNargile(prev => prev?.id === id ? null : prev);
+    }, 5000);
+  };
+
   const _handleNargileClick = () => {
     if (_nargile) {
       playSound('nargile');
@@ -113,19 +129,17 @@ function App() {
         }
         return prev;
       });
+
+      // GARANTİ SİSTEM: 60 saniyedir çıkmadıysa zorla çıkart
+      if (Date.now() - lastNargileTime.current > 60000) {
+        spawnNargile();
+      }
     }, 1000);
 
     const _nargileInterval = setInterval(() => {
+      // Normal şans döngüsü (%15)
       if (Math.random() < 0.15) {
-        const x = Math.random() * 80 + 10;
-        const y = Math.random() * 80 + 10;
-        const id = Date.now();
-        _setNargile({ id, x, y });
-        playSound('nargile'); 
-        _an("🌬️ Bir nargile borusu belirdi! Sesi duyuyor musun?");
-        setTimeout(() => {
-            _setNargile(prev => prev?.id === id ? null : prev);
-        }, 5000);
+        spawnNargile();
       }
     }, 10000);
 
